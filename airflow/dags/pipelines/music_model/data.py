@@ -47,6 +47,22 @@ def collect_music(path: str) -> None:
     df.to_csv(os.path.join(path, "interm", "collect_music.csv"), index=False)
 
 
+########### Data Validation
+def validate_data(path: str) -> None:
+    """
+        This function have a small set of validations to be sure the preprocessed data
+        is correct
+    """
+    data = pd.read_csv(os.path.join(path, "interm", "collect_music.csv"))
+
+    # Dummy validations for data
+    assert data.shape[0] > 0
+    assert data.shape[1] > 0
+
+    # TO-DO: check distributions and outliers, and save stats
+    print(":D")
+
+
 ########### Data Preprocessing
 def preprocess_data(data_path: str, artifact_path: str) -> None:
     """
