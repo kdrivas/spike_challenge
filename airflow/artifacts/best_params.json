@@ -1,0 +1,9 @@
+{
+    "random_state": 0,
+    "subsample": 0.8,
+    "n_estimators": 300,
+    "warm_start": true,
+    "max_features": "sqrt",
+    "min_samples_split": 106,
+    "min_samples_leaf": 177
+}
