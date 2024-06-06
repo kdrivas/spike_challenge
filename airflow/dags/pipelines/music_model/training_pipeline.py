@@ -11,8 +11,13 @@ from airflow.operators.python import PythonOperator
 from utils.config import VERSION
 from pipelines.music_model.data import (
     collect_music,
-    preprocess_data
+    validate_data,
+    preprocess_data,
 )
+from pipelines.music_model.model import (
+    training_model,
+)
+training_model
 
 
 locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
@@ -44,6 +49,18 @@ with DAG(
     )
 
     ###############################
+    ###  Data validation 
+    ###############################
+
+    validation_step = PythonOperator(
+        task_id=f"validate_data",
+        python_callable=validate_data,
+        op_kwargs={
+            "path": data_path, 
+        }
+    )
+
+    ###############################
     ###  Preprocessing data 
     ###############################
 
@@ -56,4 +73,22 @@ with DAG(
         }
     )
 
-    gather_step >> preprocessing_step
+    ###############################
+    ###  Model building
+    ############################### 
+
+    training_step = PythonOperator(
+        task_id=f"training_model",
+        python_callable=training_model,
+        op_kwargs={
+            "data_path": data_path, 
+            "artifact_path": artifact_path, 
+        }
+    )
+
+    (
+        gather_step >>
+        validation_step >>
+        preprocessing_step >>
+        training_step
+    )
