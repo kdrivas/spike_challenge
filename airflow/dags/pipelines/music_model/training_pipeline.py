@@ -8,9 +8,10 @@ import locale
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-from pipelines.music_model.constants import VERSION
+from utils.config import VERSION
 from pipelines.music_model.data import (
-    collect_music
+    collect_music,
+    preprocess_data
 )
 
 
@@ -32,11 +33,27 @@ with DAG(
     ###############################
 
     data_path = os.path.join(AIRFLOW_HOME, "data")
+    artifact_path = os.path.join(AIRFLOW_HOME, "artifacts")
 
-    gather_milk_step = PythonOperator(
+    gather_step = PythonOperator(
         task_id=f"gather_reggaeton_music",
         python_callable=collect_music,
         op_kwargs={
             "path": data_path, 
         }
     )
+
+    ###############################
+    ###  Preprocessing data 
+    ###############################
+
+    preprocessing_step = PythonOperator(
+        task_id=f"preprocess_data",
+        python_callable=preprocess_data,
+        op_kwargs={
+            "data_path": data_path, 
+            "artifact_path": artifact_path, 
+        }
+    )
+
+    gather_step >> preprocessing_step
