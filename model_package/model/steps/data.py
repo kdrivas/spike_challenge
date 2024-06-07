@@ -2,6 +2,7 @@
     This file contains the function for data gathering, merging and preprocessing
 """
 import os
+import logging
 import pandas as pd
 import joblib
 
@@ -12,28 +13,33 @@ from sklearn.preprocessing import MinMaxScaler
 
 from imblearn.over_sampling import SMOTE
 
-from pipelines.music_model.constants import (
+from model.utils.constants import (
     TARGET_COL,
     FLOAT_COLS,
     SCALE_COLS,
     DROP_COLS,
 )
-from utils.transformers import (
+from model.utils.transformers import (
     DropCols,
     CastCol,
 )
 
+logger = logging.getLogger(__name__)
 
-########### Data Gathering
-def collect_music(path: str) -> None:
+
+def validate_assets(base_path: str) -> None:
+    pass
+
+
+def collect_assets(base_path: str, dry_run: bool = False) -> None:
     """
         This function will collect and merge the data from different sources
     """
     df_reggae = pd.read_csv(
-        os.path.join(path, "raw", "data_reggaeton.csv"), encoding="utf-8",
+        os.path.join(base_path, "data", "raw", "data_reggaeton.csv"), encoding="utf-8",
     )
     df_not_reggae = pd.read_csv(
-        os.path.join(path, "raw", "data_todotipo.csv"), encoding="utf-8",
+        os.path.join(base_path, "data", "raw", "data_todotipo.csv"), encoding="utf-8",
     )
 
     df_reggae[TARGET_COL] = 1
@@ -44,27 +50,16 @@ def collect_music(path: str) -> None:
 
     df = pd.concat((df_reggae, df_not_reggae), axis=0)
 
-    df.to_csv(os.path.join(path, "interm", "collect_music.csv"), index=False)
+    if dry_run:
+        logger.info("Skipping saving")
+    else:
+        logger.info("Saving music data")
+        df.to_csv(
+            os.path.join(base_path, "data", "interm", "collect_music.csv"), index=False
+        )
 
 
-########### Data Validation
-def validate_data(path: str) -> None:
-    """
-        This function have a small set of validations to be sure the preprocessed
-        data is correct
-    """
-    data = pd.read_csv(os.path.join(path, "interm", "collect_music.csv"))
-
-    # Dummy validations for data
-    assert data.shape[0] > 0
-    assert data.shape[1] > 0
-
-    # TO-DO: check distributions and outliers, and save stats
-    print(":D")
-
-
-########### Data Preprocessing
-def preprocess_data(data_path: str, artifact_path: str) -> None:
+def preprocess_assets(base_path: str, dry_run: bool = False) -> None:
     """
         This function will execute the data preprocessing and serialize
         the data pipeline
@@ -83,7 +78,7 @@ def preprocess_data(data_path: str, artifact_path: str) -> None:
     ])
 
     # Read the data and set the period as index
-    df_merge = pd.read_csv(os.path.join(data_path, "interm", "collect_music.csv"))
+    df_merge = pd.read_csv(os.path.join(base_path, "data", "interm", "collect_music.csv"))
 
     # Running pipeline and removing nulls
     df_prec = pipe_1.fit_transform(df_merge.drop(TARGET_COL, axis=1), df_merge[TARGET_COL])
@@ -96,9 +91,14 @@ def preprocess_data(data_path: str, artifact_path: str) -> None:
     )
     df_prec_merged = pd.concat((y_res, pd.DataFrame(X_res)), axis=1)
 
-    # Saving data and serializing pipelines
-    df_prec_merged.to_csv(
-        os.path.join(data_path, "preprocessed", "prec_merged.csv"), index=False
-    )
-    
-    joblib.dump(pipe_1, os.path.join(artifact_path, "data_pipeline.pkl"))
+    if dry_run:
+        logger.info("Skipping saving")
+    else:
+        logger.info("Saving artifacts.")
+
+        # Saving data and serializing pipelines
+        df_prec_merged.to_csv(
+            os.path.join(base_path, "data", "preprocessed", "prec_merged.csv"), index=False
+        )
+        
+        joblib.dump(pipe_1, os.path.join(base_path, "artifacts", "data_pipeline.pkl"))

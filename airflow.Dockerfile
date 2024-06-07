@@ -12,7 +12,5 @@ ENV LC_ALL es_ES.UTF-8
 USER airflow
 RUN pip install --upgrade pip setuptools wheel
 
-COPY requirements.txt dags
-
-COPY setup.py dags
-RUN pip install -e dags/
+COPY model_package .
+RUN pip install -e .
