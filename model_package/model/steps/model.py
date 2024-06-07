@@ -40,14 +40,14 @@ def training_model(base_path: str, dry_run: bool = False) -> None:
         )
 
 
-def batch_prediction_model(base_path: str) -> None:
+def run_batch_prediction(base_path: str) -> None:
     """
         Predict batch data
     """
 
     # Read historic features from our feature store
     features = pd.read_csv(
-        os.path.join(base_path, "feature_store", "batch_data.csv")
+        os.path.join(base_path, "data", "feature_store", "batch_data.csv")
     )
 
     model = joblib.load(os.path.join(base_path, "artifacts", "model.pkl"))
@@ -55,4 +55,4 @@ def batch_prediction_model(base_path: str) -> None:
     pred = model.predict(features)
     features["preds"] = pred
 
-    features.to_csv(os.path.join(base_path, "batch_predictions", "predictions.csv"), index=False)
+    features.to_csv(os.path.join(base_path, "data", "batch_predictions", "predictions.csv"), index=False)

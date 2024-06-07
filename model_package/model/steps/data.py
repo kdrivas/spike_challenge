@@ -102,3 +102,32 @@ def preprocess_assets(base_path: str, dry_run: bool = False) -> None:
         )
         
         joblib.dump(pipe_1, os.path.join(base_path, "artifacts", "data_pipeline.pkl"))
+
+
+def create_batch_data(base_path: str, dry_run: bool = False) -> None:
+    """
+        This function will execute the data preprocessing and create
+        the data for running predictions
+    """
+    # The pipeline is divided in two parts due to the presence of null values
+    pipe_1 = joblib.load(os.path.join(base_path, "artifacts", "data_pipeline.pkl"))
+
+    # Read the data and set the period as index
+    df_merge = pd.read_csv(os.path.join(base_path, "data", "interm", "collect_music.csv"))
+
+    # Running pipeline and removing nulls
+    df_prec = pipe_1.fit_transform(df_merge.drop(TARGET_COL, axis=1), df_merge[TARGET_COL])
+    df_prec = pd.DataFrame(df_prec)
+    df_prec = df_prec.dropna(how="any", axis=0)
+
+    if dry_run:
+        logger.info("Skipping saving")
+    else:
+        logger.info("Saving artifacts.")
+
+        # Saving data and serializing pipelines
+        df_prec.to_csv(
+            os.path.join(base_path, "data", "feature_store", "batch_data.csv"), index=False
+        )
+        
+        joblib.dump(pipe_1, os.path.join(base_path, "artifacts", "data_pipeline.pkl"))
