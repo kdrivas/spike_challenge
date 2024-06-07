@@ -50,8 +50,8 @@ def collect_music(path: str) -> None:
 ########### Data Validation
 def validate_data(path: str) -> None:
     """
-        This function have a small set of validations to be sure the preprocessed data
-        is correct
+        This function have a small set of validations to be sure the preprocessed
+        data is correct
     """
     data = pd.read_csv(os.path.join(path, "interm", "collect_music.csv"))
 
@@ -66,15 +66,18 @@ def validate_data(path: str) -> None:
 ########### Data Preprocessing
 def preprocess_data(data_path: str, artifact_path: str) -> None:
     """
-        This function will execute the data preprocessing and serialize the data pipeline
+        This function will execute the data preprocessing and serialize
+        the data pipeline
     """
     # The pipeline is divided in two parts due to the presence of null values
     pipe_1 =  Pipeline([
         ("cast_float_cols", CastCol(FLOAT_COLS, "float")),
         ("drop_cols", DropCols(DROP_COLS)),
         ("min_max_scaler", ColumnTransformer(
-                [(f"scaler_{col}", MinMaxScaler(), [col]) for col in SCALE_COLS],
-                remainder="passthrough"
+                [
+                    (f"scaler_{col}", MinMaxScaler(), [col]) for col in SCALE_COLS
+                ],
+                remainder="passthrough",
             ),
         ),
     ])
@@ -94,6 +97,8 @@ def preprocess_data(data_path: str, artifact_path: str) -> None:
     df_prec_merged = pd.concat((y_res, pd.DataFrame(X_res)), axis=1)
 
     # Saving data and serializing pipelines
-    df_prec_merged.to_csv(os.path.join(data_path, "preprocessed", "prec_merged.csv"), index=False)
+    df_prec_merged.to_csv(
+        os.path.join(data_path, "preprocessed", "prec_merged.csv"), index=False
+    )
     
     joblib.dump(pipe_1, os.path.join(artifact_path, "data_pipeline.pkl"))
