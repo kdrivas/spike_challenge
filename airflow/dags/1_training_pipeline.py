@@ -1,5 +1,5 @@
 """
-    Training pipeline for milk model 
+    Training pipeline for music model 
 """
 import os
 from datetime import datetime
