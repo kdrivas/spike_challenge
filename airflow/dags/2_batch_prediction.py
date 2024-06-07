@@ -14,11 +14,11 @@ AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 
 
 with DAG(
-    dag_id=f"training_pipeline_v1_0",
+    dag_id=f"batch_prediction_v1_0",
     schedule_interval=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["training_pipeline"],
+    tags=["batch_prediction"],
 ) as dag:
 
     validate_assets_task = BashOperator(
@@ -31,19 +31,19 @@ with DAG(
         bash_command=f"python -m model collect_assets --base_path {AIRFLOW_HOME}",
     )
 
-    preprocessing_task = BashOperator(
-        task_id="preprocessing",
-        bash_command=f"python -m model preprocess_assets --base_path {AIRFLOW_HOME}",
+    create_batch_data_task = BashOperator(
+        task_id="create_batch_data",
+        bash_command=f"python -m model create_batch_data --base_path {AIRFLOW_HOME}",
     )
 
-    training_model_task = BashOperator(
-        task_id="training_model",
-        bash_command=f"python -m model training_model --base_path {AIRFLOW_HOME}",
+    run_predictions_task = BashOperator(
+        task_id="run_predictions",
+        bash_command=f"python -m model run_batch_prediction --base_path {AIRFLOW_HOME}",
     )
 
     (
         validate_assets_task >>
         collect_assets_task >>
-        preprocessing_task >>
-        training_model_task
+        create_batch_data_task >>
+        run_predictions_task
     )
