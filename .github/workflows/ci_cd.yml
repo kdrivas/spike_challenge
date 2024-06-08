@@ -11,7 +11,9 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-    - name: Install dependencies
-      run: pip install -r model_package/requirements.txt -r model_package/requirements-test.txt
+    - name: Install test dependencies
+      run: pip install -r model_package/requirements-test.txt
+    - name: Install package
+      run: pip install -e model_package/
     - name: Run model tests
       run: pytest .
