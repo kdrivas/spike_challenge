@@ -17,3 +17,5 @@ jobs:
       run: pip install -e model_package/
     - name: Run model tests
       run: pytest .
+    - name: Check code style
+      run: pre-commit

@@ -1,7 +1,3 @@
-"""
-    This file contains transformer classes for scikit learn pipelines.
-    The intention is to reuse the code
-"""
 import pytest
 import pandas as pd
 from model.utils.transformers import (
