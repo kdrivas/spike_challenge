@@ -116,7 +116,7 @@ def create_batch_data(base_path: str, dry_run: bool = False) -> None:
     df_merge = pd.read_csv(os.path.join(base_path, "data", "interm", "collect_music.csv"))
 
     # Running pipeline and removing nulls
-    df_prec = pipe_1.fit_transform(df_merge.drop(TARGET_COL, axis=1), df_merge[TARGET_COL])
+    df_prec = pipe_1.transform(df_merge.drop(TARGET_COL, axis=1))
     df_prec = pd.DataFrame(df_prec)
     df_prec = df_prec.dropna(how="any", axis=0)
 

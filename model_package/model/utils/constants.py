@@ -19,5 +19,6 @@ DROP_COLS = [
     "mode",
     "instrumentalness",
     "loudness",
-    "liveness"
+    "liveness",
+    "id_new",
 ]
