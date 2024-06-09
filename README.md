@@ -11,6 +11,42 @@ Stack: Airflow + Fastapi
 ## Estructura del proyecto
 
 ```
+spike_challenge
+├── README.md
+├── airflow
+│   ├── artifacts
+│   ├── config
+│   ├── dags
+│   │   ├── 1_training_pipeline.py
+│   │   ├── 2_batch_prediction.py
+│   ├── data
+│   ├── logs
+│   └── plugins
+├── app
+│   ├── app
+│   ├── nginx.conf
+│   └── requirements.txt
+├── docs
+├── model_package                       # Files for training and preprocessing
+│   ├── model
+│   │   ├── __main__.py
+│   │   ├── steps
+│   │   │   ├── __init__.py
+│   │   │   ├── data.py
+│   │   │   └── model.py
+│   │   └── utils
+│   │       ├── __init__.py
+│   │       ├── config.py
+│   │       ├── constants.py
+│   │       └── transformers.py
+│   ├── requirements-test.txt
+│   ├── requirements.txt
+│   ├── setup.py
+│   └── tests
+├── pytest.ini
+├── docker-compose.yml                
+├── airflow.Dockerfile
+└── service.Dockerfile
 ```
 ## Etapas del proyecto
 - Se realizaron dos dags: uno para el entrenamiento del modelo y otro para hacer predicciones en batch
