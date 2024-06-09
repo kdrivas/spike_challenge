@@ -118,7 +118,7 @@ curl --location --request POST 'localhost:8090/get_prediction' \
 
 ```json
 {
-    "prediction": 230.67016693669638
+    "prediction": 1
 }
 ```
 ## Ejecucion
